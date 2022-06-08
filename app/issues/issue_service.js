@@ -169,6 +169,14 @@ exports.updateIssueService = async (body) => {
       };
     }
 
+    if (!issue_title && !issue_text && !created_by && !assigned_to && !status_text && !open) {
+
+      return {
+        error: 'no update field(s) sent',
+        _id,
+      };
+    }
+
     if (!ObjectId.isValid(_id.trim())) {
 
       return {
