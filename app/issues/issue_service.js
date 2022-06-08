@@ -184,7 +184,7 @@ exports.updateIssueService = async (body) => {
 
       return {
         error: 'could not update',
-        _id: id,
+        _id: id.toString(),
       };
     }
 
@@ -232,7 +232,7 @@ exports.updateIssueService = async (body) => {
 
       return {
         error: 'no update field(s) sent',
-        _id: id,
+        _id: id.toString(),
       };
     }
 
@@ -245,7 +245,7 @@ exports.updateIssueService = async (body) => {
     await updateIssue({ _id: id }, updatePayload);
 
     return {
-      _id,
+      _id: id.toString(),
       result: 'successfully updated',
     };
   } catch (err) {
