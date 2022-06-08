@@ -56,7 +56,7 @@ exports.getIssuesService = async (projectName, query = {}) => {
       conditions.open = query.open.trim() === 'true';
     }
 
-    const issues = await findIssues(conditions);
+    const issues = await findIssues(conditions, { projection: { project_id: 0 } });
 
     return issues;
   } catch (err) {
@@ -134,7 +134,7 @@ exports.createIssueService = async (projectName, body) => {
     );
 
     const id = insertIssueResult.insertedId;
-    const insertedIssue = await findOneIssue({ _id: id });
+    const insertedIssue = await findOneIssue({ _id: id }, { projection: { project_id: 0 } });
 
     return insertedIssue;
   } catch (err) {

@@ -4,7 +4,7 @@ const assert = chai.assert;
 const server = require('../server');
 
 chai.use(chaiHttp);
-let deleteId;
+let testingId;
 
 suite('Functional Tests', () => {
 
@@ -22,12 +22,12 @@ suite('Functional Tests', () => {
         })
         .end((err, res) => {
           const id = res.body._id;
-          const projectId = res.body.project_id;
+          // const projectId = res.body.project_id;
           const createdOn = res.body.created_on;
           const updatedOn = res.body.updated_on;
           assert.deepEqual(res.body, {
             _id: id,
-            project_id: projectId,
+            // project_id: projectId,
             issue_title: 'Test Issue',
             issue_text: 'This is a test issue',
             created_by: 'Creator',
@@ -37,7 +37,7 @@ suite('Functional Tests', () => {
             created_on: createdOn,
             updated_on: updatedOn,
           });
-          deleteId = id;
+          testingId = id;
 
           done();
         });
@@ -53,12 +53,12 @@ suite('Functional Tests', () => {
         })
         .end((err, res) => {
           const id = res.body._id;
-          const projectId = res.body.project_id;
+          // const projectId = res.body.project_id;
           const createdOn = res.body.created_on;
           const updatedOn = res.body.updated_on;
           assert.deepEqual(res.body, {
             _id: id,
-            project_id: projectId,
+            // project_id: projectId,
             issue_title: 'Title',
             issue_text: 'Text',
             created_by: 'Creator',
@@ -96,7 +96,7 @@ suite('Functional Tests', () => {
           res.body.forEach((issue) => {
             assert.hasAllKeys(issue, [
               '_id',
-              'project_id',
+              // 'project_id',
               'issue_title',
               'issue_text',
               'created_by',
@@ -148,13 +148,13 @@ suite('Functional Tests', () => {
       chai.request(server)
         .put('/api/issues/api-test')
         .send({
-          _id: '62a03a96e4edf06167b1b2ea',
+          _id: testingId,
           issue_text: `This text was last changed on ${new Date()}`,
         })
         .end((err, res) => {
           assert.deepEqual(res.body, {
             result: 'successfully updated',
-            _id: '62a03a96e4edf06167b1b2ea',
+            _id: testingId,
           });
 
           done();
@@ -165,14 +165,14 @@ suite('Functional Tests', () => {
       chai.request(server)
         .put('/api/issues/api-test')
         .send({
-          _id: '62a03a96e4edf06167b1b2ea',
+          _id: testingId,
           issue_title: `${Date.now()}`,
           issue_text: `This text was last changed on ${new Date()}`,
         })
         .end((err, res) => {
           assert.deepEqual(res.body, {
             result: 'successfully updated',
-            _id: '62a03a96e4edf06167b1b2ea',
+            _id: testingId,
           });
 
           done();
@@ -198,12 +198,12 @@ suite('Functional Tests', () => {
       chai.request(server)
         .put('/api/issues/api-test')
         .send({
-          _id: '62a03a96e4edf06167b1b2ea',
+          _id: testingId,
         })
         .end((err, res) => {
           assert.deepEqual(res.body, {
             error: 'no update field(s) sent',
-            _id: '62a03a96e4edf06167b1b2ea',
+            _id: testingId,
           });
 
           done();
@@ -232,11 +232,11 @@ suite('Functional Tests', () => {
     test('Delete an issue', (done) => {
       chai.request(server)
         .delete('/api/issues/api-test')
-        .send({ _id: deleteId })
+        .send({ _id: testingId })
         .end((err, res) => {
           assert.deepEqual(res.body, {
             result: 'successfully deleted',
-            _id: deleteId,
+            _id: testingId,
           });
 
           done();
