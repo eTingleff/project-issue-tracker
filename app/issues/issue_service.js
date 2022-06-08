@@ -253,7 +253,7 @@ exports.updateIssueService = async (body) => {
   }
 }
 
-exports.deleteIssueService = async (body) => {
+exports.deleteIssueService = async (projectName, body) => {
   try {
     if (!body._id) {
 
@@ -287,7 +287,24 @@ exports.deleteIssueService = async (body) => {
 
       return {
         error: 'could not delete',
-        _id: id,
+        _id: id.toString(),
+      }
+    }
+
+    const project = await findOneProjectService(projectName);
+    if (project && project.issues.length) {
+      let issuesCopy = project.issues.slice();
+      const index = issuesCopy.findIndex((issue) => issue.toString() === id.toString());
+      if (index >= 0) {
+        issuesCopy.splice(index, 1);
+        const update = {
+          $set: {
+            issues: issuesCopy,
+            updated_on: new Date(),
+          },
+        };
+
+        await updateOneProject({ _id: project._id }, update);
       }
     }
 
@@ -296,13 +313,13 @@ exports.deleteIssueService = async (body) => {
 
       return {
         error: 'could not delete',
-        _id: id,
+        _id: id.toString(),
       }
     };
 
     return {
       result: 'successfully deleted',
-      _id: id,
+      _id: id.toString(),
     }
   } catch (err) {
     console.error('deleteIssueService error: ', err);

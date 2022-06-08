@@ -27,7 +27,8 @@ module.exports = function (app) {
     })
 
     .delete(async (req, res) => {
-      const response = await issueController.deleteIssueService(req.body);
+      const projectName = req.params.project;
+      const response = await issueController.deleteIssueService(projectName, req.body);
 
       return res.json(response);
     });
