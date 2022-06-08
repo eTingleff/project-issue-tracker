@@ -12,7 +12,7 @@ suite('Functional Tests', () => {
 
     test('Create an issue with every field', (done) => {
       chai.request(server)
-        .post('/api/issues/api-post-delete-test')
+        .post('/api/issues/api-test')
         .send({
           issue_title: 'Test Issue',
           issue_text: 'This is a test issue',
@@ -21,19 +21,23 @@ suite('Functional Tests', () => {
           status_text: 'Open',
         })
         .end((err, res) => {
-          assert.hasAllKeys(res.body, [
-            '_id',
-            'project_id',
-            'issue_title',
-            'issue_text',
-            'created_by',
-            'assigned_to',
-            'status_text',
-            'open',
-            'created_on',
-            'updated_on',
-          ]);
-          deleteId = res.body._id;
+          const id = res.body._id;
+          const projectId = res.body.project_id;
+          const createdOn = res.body.created_on;
+          const updatedOn = res.body.updated_on;
+          assert.deepEqual(res.body, {
+            _id: id,
+            project_id: projectId,
+            issue_title: 'Test Issue',
+            issue_text: 'This is a test issue',
+            created_by: 'Creator',
+            assigned_to: 'Assignee',
+            status_text: 'Open',
+            open: true,
+            created_on: createdOn,
+            updated_on: updatedOn,
+          });
+          deleteId = id;
 
           done();
         });
@@ -41,30 +45,29 @@ suite('Functional Tests', () => {
 
     test('Create an issue with only required fields', (done) => {
       chai.request(server)
-        .post('/api/issues/api-post-delete-test')
+        .post('/api/issues/api-test')
         .send({
           issue_title: 'Title',
           issue_text: 'Text',
           created_by: 'Creator'
         })
         .end((err, res) => {
-          assert.hasAllKeys(res.body, [
-            '_id',
-            'project_id',
-            'issue_title',
-            'issue_text',
-            'created_by',
-            'assigned_to',
-            'status_text',
-            'open',
-            'created_on',
-            'updated_on',
-          ]);
-          assert.equal(res.body.issue_title, 'Title');
-          assert.equal(res.body.issue_text, 'Text');
-          assert.equal(res.body.created_by, 'Creator');
-          assert.equal(res.body.assigned_to, '');
-          assert.equal(res.body.status_text, '');
+          const id = res.body._id;
+          const projectId = res.body.project_id;
+          const createdOn = res.body.created_on;
+          const updatedOn = res.body.updated_on;
+          assert.deepEqual(res.body, {
+            _id: id,
+            project_id: projectId,
+            issue_title: 'Title',
+            issue_text: 'Text',
+            created_by: 'Creator',
+            assigned_to: '',
+            status_text: '',
+            open: true,
+            created_on: createdOn,
+            updated_on: updatedOn,
+          });
 
           done();
         });
@@ -72,7 +75,7 @@ suite('Functional Tests', () => {
 
     test('Create an issue with missing required fields', (done) => {
       chai.request(server)
-        .post('/api/issues/api-post-delete-test')
+        .post('/api/issues/apit-test')
         .send({
           issue_title: 'Title',
         })
@@ -87,7 +90,7 @@ suite('Functional Tests', () => {
   suite('GET request to /api/issues/{project}', (done) => {
     test('View issues on a project', (done) => {
       chai.request(server)
-        .get('/api/issues/api-get-test')
+        .get('/api/issues/api-test')
         .end((err, res) => {
           assert.isTrue(Array.isArray(res.body));
           res.body.forEach((issue) => {
@@ -111,7 +114,7 @@ suite('Functional Tests', () => {
 
     test('View issues on a project with one filter', (done) => {
       chai.request(server)
-        .get('/api/issues/api-get-test')
+        .get('/api/issues/api-test')
         .query({ open: false })
         .end((err, res) => {
           assert.isTrue(Array.isArray(res.body));
@@ -125,7 +128,7 @@ suite('Functional Tests', () => {
 
     test('View issues on a project with multiple filters', (done) => {
       chai.request(server)
-        .get('/api/issues/api-get-test')
+        .get('/api/issues/api-test')
         .query({ status_text: 'IN_PROGRESS', assigned_to: 'some_dev' })
         .end((err, res) => {
           assert.isTrue(Array.isArray(res.body));
@@ -143,15 +146,15 @@ suite('Functional Tests', () => {
 
     test('Update one field on an issue', (done) => {
       chai.request(server)
-        .put('/api/issues/api-put-test')
+        .put('/api/issues/api-test')
         .send({
-          _id: '629ec15b6e9e354928380b09',
+          _id: '62a03a96e4edf06167b1b2ea',
           issue_text: `This text was last changed on ${new Date()}`,
         })
         .end((err, res) => {
           assert.deepEqual(res.body, {
             result: 'successfully updated',
-            _id: '629ec15b6e9e354928380b09',
+            _id: '62a03a96e4edf06167b1b2ea',
           });
 
           done();
@@ -160,16 +163,16 @@ suite('Functional Tests', () => {
 
     test('Update multiple fields on an issue', (done) => {
       chai.request(server)
-        .put('/api/issues/api-put-test')
+        .put('/api/issues/api-test')
         .send({
-          _id: '629ec15b6e9e354928380b09',
+          _id: '62a03a96e4edf06167b1b2ea',
           issue_title: `${Date.now()}`,
           issue_text: `This text was last changed on ${new Date()}`,
         })
         .end((err, res) => {
           assert.deepEqual(res.body, {
             result: 'successfully updated',
-            _id: '629ec15b6e9e354928380b09',
+            _id: '62a03a96e4edf06167b1b2ea',
           });
 
           done();
@@ -178,7 +181,7 @@ suite('Functional Tests', () => {
 
     test('Update an issue with missing _id', (done) => {
       chai.request(server)
-        .put('/api/issues/api-put-test')
+        .put('/api/issues/api-test')
         .send({
           issue_text: 'Text',
         })
@@ -193,14 +196,14 @@ suite('Functional Tests', () => {
 
     test('Update an issue with no fields to update', (done) => {
       chai.request(server)
-        .put('/api/issues/api-put-test')
+        .put('/api/issues/api-test')
         .send({
-          _id: '629ec15b6e9e354928380b09',
+          _id: '62a03a96e4edf06167b1b2ea',
         })
         .end((err, res) => {
           assert.deepEqual(res.body, {
             error: 'no update field(s) sent',
-            _id: '629ec15b6e9e354928380b09',
+            _id: '62a03a96e4edf06167b1b2ea',
           });
 
           done();
@@ -209,7 +212,7 @@ suite('Functional Tests', () => {
 
     test('Update an issue with an invalid _id', (done) => {
       chai.request(server)
-        .put('/api/issues/api-put-test')
+        .put('/api/issues/api-test')
         .send({
           _id: 'invalid_id',
           assigned_to: 'Bob',
@@ -228,7 +231,7 @@ suite('Functional Tests', () => {
   suite('DELETE request to /api/issues/{project}', () => {
     test('Delete an issue', (done) => {
       chai.request(server)
-        .delete('/api/issues/api-post-delete-test')
+        .delete('/api/issues/api-test')
         .send({ _id: deleteId })
         .end((err, res) => {
           assert.deepEqual(res.body, {
@@ -242,7 +245,7 @@ suite('Functional Tests', () => {
 
     test('Delete an issue with an invalid _id', (done) => {
       chai.request(server)
-        .delete('/api/issues/api-post-delete-test')
+        .delete('/api/issues/api-test')
         .send({ _id: 'invalid_id' })
         .end((err, res) => {
           assert.deepEqual(res.body, {
@@ -256,7 +259,7 @@ suite('Functional Tests', () => {
 
     test('Delete an issue with missing _id', (done) => {
       chai.request(server)
-        .delete('/api/issues/api-post-delete-test')
+        .delete('/api/issues/api-test')
         .send({})
         .end((err, res) => {
           assert.deepEqual(res.body, {
