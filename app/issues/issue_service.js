@@ -17,43 +17,47 @@ const {
 
 exports.getIssuesService = async (projectName, query = {}) => {
   try {
-    const project = await findOneProjectService(projectName);
-    if (!project) {
+    const conditions = {};
 
-      return {
-        status: 404,
-      };
-    }
+    if (query._id) {
+      conditions._id = new ObjectId(query._id);
+    } else {
+      const project = await findOneProjectService(projectName);
+      if (!project) {
 
-    const issueIds = project.issues;
-    if (!issueIds || !issueIds.length) {
+        return {
+          status: 404,
+        };
+      }
 
-      return [];
-    }
+      const issueIds = project.issues;
+      if (!issueIds || !issueIds.length) {
 
-    const conditions = {
-      _id: {
+        return [];
+      }
+
+      conditions._id = {
         $in: issueIds,
-      },
-    };
+      };
 
-    if (query.issue_title && query.issue_title.trim()) {
-      conditions.issue_title = query.issue_title.trim();
-    }
-    if (query.issue_text && query.issue_text.trim()) {
-      conditions.issue_text = query.issue_text.trim();
-    }
-    if (query.created_by && query.created_by.trim()) {
-      conditions.created_by = query.created_by.trim();
-    }
-    if (query.assigned_to && query.assigned_to.trim()) {
-      conditions.assigned_to = query.assigned_to.trim();
-    }
-    if (query.status_text && query.status_text.trim()) {
-      conditions.status_text = query.status_text.trim();
-    }
-    if (query.open && query.open.trim()) {
-      conditions.open = query.open.trim() === 'true';
+      if (query.issue_title && query.issue_title.trim()) {
+        conditions.issue_title = query.issue_title.trim();
+      }
+      if (query.issue_text && query.issue_text.trim()) {
+        conditions.issue_text = query.issue_text.trim();
+      }
+      if (query.created_by && query.created_by.trim()) {
+        conditions.created_by = query.created_by.trim();
+      }
+      if (query.assigned_to && query.assigned_to.trim()) {
+        conditions.assigned_to = query.assigned_to.trim();
+      }
+      if (query.status_text && query.status_text.trim()) {
+        conditions.status_text = query.status_text.trim();
+      }
+      if (query.open && query.open.trim()) {
+        conditions.open = query.open.trim() === 'true';
+      }
     }
 
     const issues = await findIssues(conditions, { projection: { project_id: 0 } });
